@@ -17,6 +17,7 @@ namespace Models
       DARABONBA_PTR_TO_JSON(BizRegionId, bizRegionId_);
       DARABONBA_PTR_TO_JSON(InstanceIds, instanceIds_);
       DARABONBA_PTR_TO_JSON(MaxSteps, maxSteps_);
+      DARABONBA_PTR_TO_JSON(RunConfig, runConfig_);
       DARABONBA_PTR_TO_JSON(ScheduleId, scheduleId_);
       DARABONBA_PTR_TO_JSON(Targets, targets_);
       DARABONBA_PTR_TO_JSON(TaskConfigId, taskConfigId_);
@@ -27,6 +28,7 @@ namespace Models
       DARABONBA_PTR_FROM_JSON(BizRegionId, bizRegionId_);
       DARABONBA_PTR_FROM_JSON(InstanceIds, instanceIds_);
       DARABONBA_PTR_FROM_JSON(MaxSteps, maxSteps_);
+      DARABONBA_PTR_FROM_JSON(RunConfig, runConfig_);
       DARABONBA_PTR_FROM_JSON(ScheduleId, scheduleId_);
       DARABONBA_PTR_FROM_JSON(Targets, targets_);
       DARABONBA_PTR_FROM_JSON(TaskConfigId, taskConfigId_);
@@ -88,9 +90,43 @@ namespace Models
       shared_ptr<string> sessionId_ {};
     };
 
+    class RunConfig : public Darabonba::Model {
+    public:
+      friend void to_json(Darabonba::Json& j, const RunConfig& obj) { 
+        DARABONBA_PTR_TO_JSON(Skills, skills_);
+      };
+      friend void from_json(const Darabonba::Json& j, RunConfig& obj) { 
+        DARABONBA_PTR_FROM_JSON(Skills, skills_);
+      };
+      RunConfig() = default ;
+      RunConfig(const RunConfig &) = default ;
+      RunConfig(RunConfig &&) = default ;
+      RunConfig(const Darabonba::Json & obj) { from_json(obj, *this); };
+      virtual ~RunConfig() = default ;
+      RunConfig& operator=(const RunConfig &) = default ;
+      RunConfig& operator=(RunConfig &&) = default ;
+      virtual void validate() const override {
+      };
+      virtual void fromMap(const Darabonba::Json &obj) override { from_json(obj, *this); validate(); };
+      virtual Darabonba::Json toMap() const override { Darabonba::Json obj; to_json(obj, *this); return obj; };
+      virtual bool empty() const override { return this->skills_ == nullptr; };
+      // skills Field Functions 
+      bool hasSkills() const { return this->skills_ != nullptr;};
+      void deleteSkills() { this->skills_ = nullptr;};
+      inline const vector<string> & getSkills() const { DARABONBA_PTR_GET_CONST(skills_, vector<string>) };
+      inline vector<string> getSkills() { DARABONBA_PTR_GET(skills_, vector<string>) };
+      inline RunConfig& setSkills(const vector<string> & skills) { DARABONBA_PTR_SET_VALUE(skills_, skills) };
+      inline RunConfig& setSkills(vector<string> && skills) { DARABONBA_PTR_SET_RVALUE(skills_, skills) };
+
+
+    protected:
+      // The list of skill IDs. A maximum of 10 skill IDs are supported. Only the first skill is passed through during command delivery. All skills are stored in task_skill_relation for reverse lookup.
+      shared_ptr<vector<string>> skills_ {};
+    };
+
     virtual bool empty() const override { return this->bizRegionId_ == nullptr
-        && this->instanceIds_ == nullptr && this->maxSteps_ == nullptr && this->scheduleId_ == nullptr && this->targets_ == nullptr && this->taskConfigId_ == nullptr
-        && this->timeoutSeconds_ == nullptr && this->userPrompt_ == nullptr; };
+        && this->instanceIds_ == nullptr && this->maxSteps_ == nullptr && this->runConfig_ == nullptr && this->scheduleId_ == nullptr && this->targets_ == nullptr
+        && this->taskConfigId_ == nullptr && this->timeoutSeconds_ == nullptr && this->userPrompt_ == nullptr; };
     // bizRegionId Field Functions 
     bool hasBizRegionId() const { return this->bizRegionId_ != nullptr;};
     void deleteBizRegionId() { this->bizRegionId_ = nullptr;};
@@ -112,6 +148,15 @@ namespace Models
     void deleteMaxSteps() { this->maxSteps_ = nullptr;};
     inline int32_t getMaxSteps() const { DARABONBA_PTR_GET_DEFAULT(maxSteps_, 0) };
     inline RunAgentTaskRequest& setMaxSteps(int32_t maxSteps) { DARABONBA_PTR_SET_VALUE(maxSteps_, maxSteps) };
+
+
+    // runConfig Field Functions 
+    bool hasRunConfig() const { return this->runConfig_ != nullptr;};
+    void deleteRunConfig() { this->runConfig_ = nullptr;};
+    inline const RunAgentTaskRequest::RunConfig & getRunConfig() const { DARABONBA_PTR_GET_CONST(runConfig_, RunAgentTaskRequest::RunConfig) };
+    inline RunAgentTaskRequest::RunConfig getRunConfig() { DARABONBA_PTR_GET(runConfig_, RunAgentTaskRequest::RunConfig) };
+    inline RunAgentTaskRequest& setRunConfig(const RunAgentTaskRequest::RunConfig & runConfig) { DARABONBA_PTR_SET_VALUE(runConfig_, runConfig) };
+    inline RunAgentTaskRequest& setRunConfig(RunAgentTaskRequest::RunConfig && runConfig) { DARABONBA_PTR_SET_RVALUE(runConfig_, runConfig) };
 
 
     // scheduleId Field Functions 
@@ -158,13 +203,15 @@ namespace Models
     shared_ptr<vector<string>> instanceIds_ {};
     // The maximum number of execution steps for the task. This prevents infinite loops. Valid values: 30 to 1000. Default value: 1000.
     shared_ptr<int32_t> maxSteps_ {};
-    // The scheduling plan ID. When specified, execution records are associated with the corresponding scheduled node, which facilitates aggregation query by scheduling dimension.
+    // The runtime configuration that carries the runtime parameters (skills) for this task.
+    shared_ptr<RunAgentTaskRequest::RunConfig> runConfig_ {};
+    // The scheduling plan ID. When specified, the execution record is associated with the corresponding scheduled node, which facilitates aggregate query by scheduling dimension through aggregation.
     shared_ptr<string> scheduleId_ {};
-    // The array of target objects. Each element contains an InstanceId and a SessionId.
+    // The Targets array. Each element is an object that contains InstanceId and SessionId.
     shared_ptr<vector<RunAgentTaskRequest::Targets>> targets_ {};
-    // The task configuration ID used to trigger a task with the specified configuration.
+    // The task configuration ID. This parameter is used to trigger a task with the specified configuration.
     shared_ptr<string> taskConfigId_ {};
-    // The timeout period of the task, in seconds. Valid values: 300 to 3600. Default value: 3600.
+    // The task timeout period, in seconds. Valid values: 300 to 3600. Default value: 3600.
     shared_ptr<int32_t> timeoutSeconds_ {};
     // The user instruction in natural language. The Agent performs operations based on this instruction.
     shared_ptr<string> userPrompt_ {};
