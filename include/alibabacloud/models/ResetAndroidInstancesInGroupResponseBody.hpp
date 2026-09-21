@@ -14,10 +14,12 @@ namespace Models
   class ResetAndroidInstancesInGroupResponseBody : public Darabonba::Model {
   public:
     friend void to_json(Darabonba::Json& j, const ResetAndroidInstancesInGroupResponseBody& obj) { 
+      DARABONBA_PTR_TO_JSON(OrderId, orderId_);
       DARABONBA_PTR_TO_JSON(RequestId, requestId_);
       DARABONBA_PTR_TO_JSON(Tasks, tasks_);
     };
     friend void from_json(const Darabonba::Json& j, ResetAndroidInstancesInGroupResponseBody& obj) { 
+      DARABONBA_PTR_FROM_JSON(OrderId, orderId_);
       DARABONBA_PTR_FROM_JSON(RequestId, requestId_);
       DARABONBA_PTR_FROM_JSON(Tasks, tasks_);
     };
@@ -91,7 +93,9 @@ namespace Models
 
 
       protected:
+        // The instance ID.
         shared_ptr<string> instanceId_ {};
+        // The child task ID.
         shared_ptr<string> taskId_ {};
       };
 
@@ -114,12 +118,21 @@ namespace Models
 
 
     protected:
+      // The child tasks.
       shared_ptr<vector<Tasks::ChildTasks>> childTasks_ {};
+      // The parent task ID.
       shared_ptr<string> parentTaskId_ {};
     };
 
-    virtual bool empty() const override { return this->requestId_ == nullptr
-        && this->tasks_ == nullptr; };
+    virtual bool empty() const override { return this->orderId_ == nullptr
+        && this->requestId_ == nullptr && this->tasks_ == nullptr; };
+    // orderId Field Functions 
+    bool hasOrderId() const { return this->orderId_ != nullptr;};
+    void deleteOrderId() { this->orderId_ = nullptr;};
+    inline string getOrderId() const { DARABONBA_PTR_GET_DEFAULT(orderId_, "") };
+    inline ResetAndroidInstancesInGroupResponseBody& setOrderId(string orderId) { DARABONBA_PTR_SET_VALUE(orderId_, orderId) };
+
+
     // requestId Field Functions 
     bool hasRequestId() const { return this->requestId_ != nullptr;};
     void deleteRequestId() { this->requestId_ = nullptr;};
@@ -137,8 +150,11 @@ namespace Models
 
 
   protected:
+    // The order ID for storage reduction. This parameter is returned only when you reduce storage while resetting instances in a cloud phone matrix. It is not returned in other scenarios.
+    shared_ptr<string> orderId_ {};
     // The request ID.
     shared_ptr<string> requestId_ {};
+    // The task information.
     shared_ptr<ResetAndroidInstancesInGroupResponseBody::Tasks> tasks_ {};
   };
 
